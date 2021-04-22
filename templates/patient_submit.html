@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+<section id="appointment" data-stellar-background-ratio="3">
+    <div class="container">
+        <div class="row">
+            <h1> {{session['name'] }}</h1>
+            <div class="col-md-6 col-sm-6">
+                <img src="static/images/appointment-image.jpg" class="img-responsive" alt="">
+            </div>
+
+            <!-- CONTACT FORM HERE -->
+            <form id="patient_submit" role="form" method="post" action="{{ url_for('file_upload') }}">
+
+                <!-- SECTION TITLE -->
+                <div class="section-title wow fadeInUp" data-wow-delay="0.4s">
+                    <h2>Submit File</h2>
+                </div>
+
+                <div class="col-md-6 col-sm-6">
+                    <div class="col-md-6 col-sm-6">
+                        <label for="user">User</label>
+                        <input type="input" id="user" name="user" value="{{session['email'] }}">
+                    </div>write
+
+                    <div class="col-md-6 col-sm-6">
+                        <label for="file">File</label>
+                        <input type="file" class="custom-file-input" id="file" name="file">
+                    </div>
+
+                    <div class="col-md-12 col-sm-12">
+                        <label for="role">Select Doctor</label>
+                        <select id="role" name="doctor" class="col-md-12 col-sm-12">
+                            {% for doctor in doctors %}
+                            <option value="{{ doctor.id }}">{{ doctor.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <button type="submit" class="form-control" id="cf-submit" name="submit">Submit
+                            Button
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+    </div>
+</section>
+
+{% endblock body %}
