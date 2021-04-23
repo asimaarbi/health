@@ -43,14 +43,16 @@
                         </div>
 
                         <div class="col-md-12 col-sm-12">
-                            <label for="role">Role</label>
-                            <select id="role" name="role" class="col-md-12 col-sm-12">
-                                <option value="doctor">Doctor</option>
-                                <option value="patient">Patient</option>
-                            </select>
+
                             <button type="submit" class="form-control" id="cf-submit" name="submit">Submit Button
                             </button>
                             <a href="/login">Login into existing account!</a>
+                            <br>
+                        {% if error %}
+                            <div class="alert">
+                                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                <strong>Error : </strong> {{ error }}
+                            </div>                        {% endif %}
 
                         </div>
                     </div>

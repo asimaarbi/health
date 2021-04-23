@@ -30,6 +30,12 @@
                             <button type="submit" class="form-control" id="cf-submit" name="submit">Submit Button
                             </button>
                             <a href="/register">Create a New Account!</a>
+                            {% if error %}
+                            <div class="danger">
+                                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                                <strong>Error : </strong> {{ error }}
+                            </div>
+                            {% endif %}
 
                         </div>
 

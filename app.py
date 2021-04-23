@@ -1,9 +1,17 @@
 import os
+
 from datetime import datetime
 from flask import Flask, render_template, flash, redirect, request, session, logging, url_for
-from models import db, User, File, Advise
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+
+from admin import UserModelView
+from models import db, User, File, Advise
+
+import flask_admin as admin
+from flask_admin import expose
+from flask_admin.base import AdminIndexView, BaseView
+from flask_admin.menu import MenuLink
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '!9m@S-dThyIlW[pHQbN^'
@@ -30,6 +38,8 @@ def login():
                 session['name'] = user.name
                 session['email'] = user.email
                 session['uid'] = user.id
+                if user.role == 'admin':
+                    return redirect('/user')
                 if user.role == 'doctor':
                     doctors = File.query.filter_by(assigned_to=str(user.id)).all()
                     return render_template('doctor.html', doctors=doctors)
@@ -37,8 +47,8 @@ def login():
                     patients = File.query.filter_by(uploaded_by=user.email).all()
                     return render_template('patient.html', patients=patients)
             else:
-                flash('Username or Password Incorrect', "Danger")
-                return redirect(url_for('login'))
+                error = 'Invalid Credentials. Please try again.'
+                return render_template('login.html', error=error)
     return render_template('login.html')
 
 
@@ -47,14 +57,14 @@ def register():
     if request.method == 'POST':
         user = User.query.filter_by(email=request.form['email']).first()
         if user:
-            flash("username alreadry exists")
-            return redirect(url_for('register'))
+            error = "username alreadry exists."
+            return render_template('register.html', error=error)
         hashed_password = generate_password_hash(request.form['password'], method='sha256')
         new_user = User(
             name=request.form['name'],
             email=request.form['email'],
             password=hashed_password,
-            role=request.form['role'])
+            role='patient')
         db.session.add(new_user)
         db.session.commit()
         flash('You are successfully registered', 'success')
@@ -96,6 +106,23 @@ def logout():
     session['logged_in'] = False
     return redirect(url_for('index'))
 
+
+class MyAdminIndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
+        if session.get('logged_in'):
+            if request.cookies.get('username'):
+                return redirect('/user')
+        if not session.get('logged_in'):
+            return render_template('login.html')
+        return redirect('/user')
+
+
+admin = admin.Admin(app, name=' ', index_view=MyAdminIndexView(name=' '),
+                    template_mode='bootstrap3',
+                    url='/admin')
+admin.add_view(UserModelView(User, db.session, url='/user'))
+admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 if __name__ == '__main__':
     app.run(debug=True)
