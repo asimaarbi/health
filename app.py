@@ -1,6 +1,9 @@
+import os
+from datetime import datetime
 from flask import Flask, render_template, flash, redirect, request, session, logging, url_for
 from models import db, User, File, Advise
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '!9m@S-dThyIlW[pHQbN^'
@@ -28,10 +31,11 @@ def login():
                 session['email'] = user.email
                 session['uid'] = user.id
                 if user.role == 'doctor':
-                    doctors = File.query.filter_by(uploaded_by=user.id).all()
-                    return render_template('doctor.html', patients=doctors)
+                    print(user.id)
+                    doctors = File.query.filter_by(assigned_to=str(user.id)).all()
+                    return render_template('doctor.html', doctors=doctors)
                 else:
-                    patients = File.query.filter_by(uploaded_by=user.id).all()
+                    patients = File.query.filter_by(uploaded_by=user.email).all()
                     return render_template('patient.html', patients=patients)
             else:
                 flash('Username or Password Incorrect', "Danger")
@@ -71,13 +75,22 @@ def submit():
 @app.route('/file_upload', methods=['GET', 'POST'])
 def file_upload():
     if request.method == 'POST':
+        pic = request.files['file']
+
+        if pic.filename:
+            filename = secure_filename(str(datetime.now()) + pic.filename)
+            pic.save(os.path.abspath(os.path.join("static/", os.path.join('images', filename))))
+        else:
+            filename = ""
         new_file = File(
             assigned_to=request.form['doctor'],
-            file=request.files['file'],
+            file=filename,
             uploaded_by=request.form['user'])
         db.session.add(new_file)
         db.session.commit()
-    return redirect(url_for(index))
+        print(request.form['doctor'])
+    patients = File.query.filter_by(uploaded_by=request.form['user']).all()
+    return render_template('patient.html', patients=patients)
 
 
 @app.route('/logout/')

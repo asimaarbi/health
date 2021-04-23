@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -16,7 +18,7 @@ class File(db.Model):
     file = db.Column(db.String(200))
     uploaded_by = db.Column(db.String(200))
     assigned_to = db.Column(db.String(200))
-    date = db.Column(db.String(50), unique=True)
+    date = db.Column(db.String(255), default=lambda: date.today())
 
 
 class Advise:
