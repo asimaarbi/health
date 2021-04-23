@@ -16,7 +16,6 @@ db.create_all(app=app)
 
 @app.route('/')
 def index():
-    print(os.getcwd())
     return render_template('index.html')
 
 

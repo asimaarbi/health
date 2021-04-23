@@ -37,7 +37,10 @@
         <!-- MENU LINKS -->
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ url_for('submit')}}" class="smoothScroll"> Submit New File</a></li>
+                <li class
+                            ="appointment-btn"><a style="background-color: #4267b2" href="{{ url_for('submit')}}">
+                    Submit New
+                    File</a></li>
                 <li class="appointment-btn">{% if session['logged_in'] %}
                     <a href="#">{{session['email'] }}</a>
                     <a style="background-color: red" href="{{ url_for('logout') }}">Logout</a>
@@ -69,7 +72,7 @@
                         <p> {{ loop.index }}</p>
                     </td>
                     <td>
-                        <p> {{ patient.file }}</p>
+                        <a target="_blank" href="../static/images/{{patient.file}}"><p> {{ patient.file }}</p></a>
                     </td>
 
                     <td>
