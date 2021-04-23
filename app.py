@@ -16,6 +16,7 @@ db.create_all(app=app)
 
 @app.route('/')
 def index():
+    print(os.getcwd())
     return render_template('index.html')
 
 
@@ -31,7 +32,6 @@ def login():
                 session['email'] = user.email
                 session['uid'] = user.id
                 if user.role == 'doctor':
-                    print(user.id)
                     doctors = File.query.filter_by(assigned_to=str(user.id)).all()
                     return render_template('doctor.html', doctors=doctors)
                 else:
@@ -88,7 +88,6 @@ def file_upload():
             uploaded_by=request.form['user'])
         db.session.add(new_file)
         db.session.commit()
-        print(request.form['doctor'])
     patients = File.query.filter_by(uploaded_by=request.form['user']).all()
     return render_template('patient.html', patients=patients)
 
@@ -100,5 +99,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    # db.create_all()
     app.run(debug=True)

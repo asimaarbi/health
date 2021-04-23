@@ -37,7 +37,6 @@
         <!-- MENU LINKS -->
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{{ url_for('index')}}" class="smoothScroll">Home</a></li>
                 <li><a href="{{ url_for('submit')}}" class="smoothScroll"> Submit New File</a></li>
                 <li class="appointment-btn">{% if session['logged_in'] %}
                     <a href="#">{{session['email'] }}</a>
