@@ -120,8 +120,9 @@ def admin_login():
     super = User.query.filter_by(email=request.form['email']).first()
     if super:
         if check_password_hash(super.password, request.form['password']):
-            session['logged_in'] = True
-            return redirect('/user')
+            if super.role == 'admin':
+                session['logged_in'] = True
+                return redirect('/user')
         if 'super' in session:
             session.pop('super')
             return redirect('/user')
