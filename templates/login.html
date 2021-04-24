@@ -8,12 +8,12 @@
         <div class="row">
 
             <div class="col-md-6 col-sm-6">
-                <img src="static/images/appointment-image.jpg" class="img-responsive" alt="">
+                <img src="../static/images/appointment-image.jpg" class="img-responsive" alt="">
             </div>
 
             <div class="col-md-6 col-sm-6">
                 <!-- CONTACT FORM HERE -->
-                <form id="login" role="form" method="post" action="#">
+                <form id="login" role="form" method="post" action="">
 
                     <!-- SECTION TITLE -->
                     <div class="section-title wow fadeInUp" data-wow-delay="0.4s">
@@ -29,9 +29,9 @@
                                    placeholder="password">
                             <button type="submit" class="form-control" id="cf-submit" name="submit">Submit Button
                             </button>
-                            <a href="/register">Create a New Account!</a>
+                            <a href="/register"><b>Create a New Account!</b></a>
                             {% if error %}
-                            <div class="danger">
+                            <div class="error_alert">
                                 <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                                 <strong>Error : </strong> {{ error }}
                             </div>

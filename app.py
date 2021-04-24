@@ -13,7 +13,7 @@ from flask_admin import expose
 from flask_admin.base import AdminIndexView, BaseView
 from flask_admin.menu import MenuLink
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='')
 app.config['SECRET_KEY'] = '!9m@S-dThyIlW[pHQbN^'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -27,7 +27,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         user = User.query.filter_by(email=request.form['email']).first()
@@ -39,7 +39,9 @@ def login():
                 session['email'] = user.email
                 session['uid'] = user.id
                 if user.role == 'admin':
-                    return redirect('/user')
+                    error = 'Invalid Credentials. Please try again.'
+                    print(error)
+                    return render_template('login.html', error=error)
                 if user.role == 'doctor':
                     doctors = File.query.filter_by(assigned_to=str(user.id)).all()
                     return render_template('doctor.html', doctors=doctors)
@@ -48,11 +50,12 @@ def login():
                     return render_template('patient.html', patients=patients)
             else:
                 error = 'Invalid Credentials. Please try again.'
+                print(error)
                 return render_template('login.html', error=error)
     return render_template('login.html')
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register/', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         user = User.query.filter_by(email=request.form['email']).first()
@@ -73,7 +76,7 @@ def register():
         return render_template('register.html')
 
 
-@app.route('/submit')
+@app.route('/submit/')
 def submit():
     if session['logged_in']:
         doctors = User.query.filter_by(role='doctor').all()
@@ -81,7 +84,7 @@ def submit():
     return render_template('index.html')
 
 
-@app.route('/file_upload', methods=['GET', 'POST'])
+@app.route('/file_upload/   ', methods=['GET', 'POST'])
 def file_upload():
     if request.method == 'POST':
         pic = request.files['file']
@@ -107,6 +110,33 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/admin_login', methods=['POST'])
+def admin_login():
+    if request.form['email'] == 'admin' and request.form['password'] == 'password':
+        session['logged_in'] = True
+        if 'user' in session:
+            session.pop('user')
+        return redirect('/user')
+    super = User.query.filter_by(email=request.form['email']).first()
+    if super:
+        if check_password_hash(super.password, request.form['password']):
+            session['logged_in'] = True
+            return redirect('/user')
+        if 'super' in session:
+            session.pop('super')
+            return redirect('/user')
+        error = 'Invalid Credentials. Please try again.'
+        return render_template('admin_login.html', error=error)
+    error = 'Invalid Credentials. Please try again.'
+    return render_template('admin_login.html', error=error)
+
+
+@app.route('/admin_logout/')
+def admin_logout():
+    session['logged_in'] = False
+    return render_template('admin_login.html')
+
+
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
     def index(self):
@@ -114,15 +144,15 @@ class MyAdminIndexView(AdminIndexView):
             if request.cookies.get('username'):
                 return redirect('/user')
         if not session.get('logged_in'):
-            return render_template('login.html')
+            return render_template('admin_login.html')
         return redirect('/user')
 
 
-admin = admin.Admin(app, name=' ', index_view=MyAdminIndexView(name=' '),
+admin = admin.Admin(app, name='Admin', index_view=MyAdminIndexView(name=' '),
                     template_mode='bootstrap3',
                     url='/admin')
 admin.add_view(UserModelView(User, db.session, url='/user'))
-admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
+admin.add_link(MenuLink(name='Logout', category='', url="/admin_logout"))
 
 if __name__ == '__main__':
     app.run(debug=True)
