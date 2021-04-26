@@ -1,9 +1,10 @@
 import os
 
 from datetime import datetime
-from flask import Flask, render_template, flash, redirect, request, session, logging, url_for
+from flask import Flask, render_template, flash, redirect, request, session, logging, url_for, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+
 
 from admin import UserModelView
 from models import db, User, File, Advise
@@ -102,6 +103,13 @@ def file_upload():
         db.session.commit()
     patients = File.query.filter_by(uploaded_by=request.form['user']).all()
     return render_template('patient.html', patients=patients)
+
+
+@app.route('/add_advise/', methods=['GET', 'POST'])
+def add_advise():
+    msg = request.args['msg']
+    print(msg)
+    return redirect(url_for('login'))
 
 
 @app.route('/logout/')

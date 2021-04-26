@@ -1,94 +1,195 @@
 {% extends "base.html" %}
 
+{% block head %}
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Button used to open the chat form - fixed at the bottom of the page */
+        .open-button {
+            color: #555;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        /* The popup chat - hidden by default */
+        .chat-popup {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            right: 15px;
+            border: 3px solid #f1f1f1;
+            z-index: 9;
+        }
+
+        /* Add styles to the form container */
+        .form-container {
+            max-width: 300px;
+            padding: 10px;
+            background-color: white;
+        }
+
+        /* Full-width textarea */
+        .form-container textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 5px 0 22px 0;
+            border: none;
+            background: #f1f1f1;
+            resize: none;
+            min-height: 200px;
+        }
+
+        /* When the textarea gets focus, do something */
+        .form-container textarea:focus {
+            background-color: #ddd;
+            outline: none;
+        }
+
+        /* Set a style for the submit/send button */
+        .form-container .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        /* Add a red background color to the cancel button */
+        .form-container .cancel {
+            background-color: red;
+        }
+
+        /* Add some hover effects to buttons */
+        .form-container .btn:hover, .open-button:hover {
+            opacity: 1;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<header>
-    <div class="container">
-        <div class="row">
+    <header>
+        <div class="container">
+            <div class="row">
 
-            <div class="col-md-4 col-sm-5">
-                <p>Welcome {{session['name'] }} to a Professional Health Care</p>
+                <div class="col-md-4 col-sm-5">
+                    <p>Welcome {{ session['name'] }} to a Professional Health Care</p>
+                </div>
+
+                <div class="col-md-8 col-sm-7 text-align-right">
+                    <span class="phone-icon"><i class="fa fa-phone"></i> 010-060-0160</span>
+                    <span class="date-icon"><i class="fa fa-calendar-plus-o"></i> 6:00 AM - 10:00 PM (Mon-Fri)</span>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+
+    <!-- MENU -->
+    <section class="navbar navbar-default navbar-static-top" role="navigation">
+        <div class="container">
+
+            <div class="navbar-header">
+                <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+                    <span class="icon icon-bar"></span>
+                </button>
+
+                <!-- lOGO TEXT HERE -->
+                <a href="index.html" class="navbar-brand"><i class="fa fa-h-square"></i>ealth Center</a>
             </div>
 
-            <div class="col-md-8 col-sm-7 text-align-right">
-                <span class="phone-icon"><i class="fa fa-phone"></i> 010-060-0160</span>
-                <span class="date-icon"><i class="fa fa-calendar-plus-o"></i> 6:00 AM - 10:00 PM (Mon-Fri)</span>
+            <!-- MENU LINKS -->
+            <div class="collapse navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="appointment-btn"> {% if session['logged_in'] %}
+                        <a href="#">{{ session['email'] }}</a>
+                        <a style="background-color: red" href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}}
+                        <a href=""> Login</a></li>
+                    {% endif %}
+                </ul>
             </div>
 
         </div>
-    </div>
-</header>
+    </section>
+
+    <section id="doctor" data-stellar-background-ratio="3">
+        <div class="container">
+            <div class="row">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">File</th>
+                        <th scope="col">Assigned By</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Advise</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for doctor in doctors %}
+
+                        <tr>
+                            <td>
+                                <p> {{ loop.index }}</p>
+                            </td>
+                            <td>
+                                <a target="_blank" href="../static/images/{{ doctor.file }}"><p> {{ doctor.file }}</p>
+                                </a>
+                            </td>
+                            <td>
+                                <p> {{ doctor.uploaded_by }}</p>
+                            </td>
+                            <td>
+                                <p> {{ doctor.date }}</p>
+                            </td>
+                            <td>
+                                <a class="open-button" onclick="openForm()">Add Advise</a>
+                            </td>
 
 
-<!-- MENU -->
-<section class="navbar navbar-default navbar-static-top" role="navigation">
-    <div class="container">
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
 
-        <div class="navbar-header">
-            <button class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon icon-bar"></span>
-                <span class="icon icon-bar"></span>
-                <span class="icon icon-bar"></span>
-            </button>
-
-            <!-- lOGO TEXT HERE -->
-            <a href="index.html" class="navbar-brand"><i class="fa fa-h-square"></i>ealth Center</a>
-        </div>
-
-        <!-- MENU LINKS -->
-        <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="appointment-btn"> {% if session['logged_in'] %}
-                    <a href="#">{{session['email'] }}</a>
-                    <a style="background-color: red" href="{{ url_for('logout') }}">Logout</a>
-                    {% else%}}
-                    <a href=""> Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
-
-    </div>
-</section>
-
-<section id="doctor" data-stellar-background-ratio="3">
-    <div class="container">
-        <div class="row">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">File</th>
-                    <th scope="col">Asigned By</th>
-                    <th scope="col">Date</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for doctor in doctors %}
-
-                <tr>
-                    <td>
-                        <p> {{ loop.index }}</p>
-                    </td>
-                    <td>
-                        <a target="_blank" href="../static/images/{{doctor.file}}"><p> {{ doctor.file }}</p></a>
-                    </td>
-                    <td>
-                        <p> {{ doctor.uploaded_by }}</p>
-                    </td>
-                    <td>
-                        <p> {{ doctor.date }}</p>
-                        </a>
-                    </td>
-
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            </div>
 
         </div>
+        </div>
+    </section>
 
+
+    <div class="chat-popup" id="myForm">
+        <form action="{{ url_for('add_advise')  }}" class="form-container">
+
+            <label for="msg"><b>Message</b></label>
+            <textarea placeholder="Type message.." name="msg" required></textarea>
+
+            <button type="submit" class="btn">Send</button>
+            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+        </form>
     </div>
-    </div>
-</section>
+
+    <script>
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
+        }
+    </script>
+
 
 {% endblock body %}
