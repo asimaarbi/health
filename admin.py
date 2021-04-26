@@ -19,7 +19,6 @@ class MyModeView(ModelView):
 class UserModelView(MyModeView):
     column_list = ['name', 'email', 'role']
     form_columns = ['name', 'email', 'password', 'role']
-    column_labels = dict(email='Username')
 
     def on_form_prefill(self, form, id):
         form.password.data = ''

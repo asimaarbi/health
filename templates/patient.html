@@ -61,7 +61,9 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">File</th>
+                    <th scope="col">Assigned to</th>
                     <th scope="col">Date</th>
+                    <th scope="col">Advise</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -74,9 +76,15 @@
                     <td>
                         <a target="_blank" href="../static/images/{{patient.file}}"><p> {{ patient.file }}</p></a>
                     </td>
-
+                    <td>
+                        <p> {{ patient.assigned_to }}</p>
+                    </td>
                     <td>
                         <p> {{ patient.date }}</p>
+                        </a>
+                    </td>
+                    <td>
+                        <textarea class="form-container" readonly> {{ patient.text }}</textarea>
                         </a>
                     </td>
 

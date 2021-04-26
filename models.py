@@ -18,12 +18,13 @@ class File(db.Model):
     file = db.Column(db.String(200))
     uploaded_by = db.Column(db.String(200))
     assigned_to = db.Column(db.String(200))
+    text = db.Column(db.String(5000), default="Not Advised")
     date = db.Column(db.String(255), default=lambda: date.today())
 
 
 class Advise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String(50))
+    date = db.Column(db.String(255), default=lambda: date.today())
     advise = db.Column(db.String(5000))
     given_by = db.Column(db.String(200))
     given_to = db.Column(db.String(200))

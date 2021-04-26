@@ -25,14 +25,14 @@
                         <label for="user">User</label>
                         <input type="input" id="user" name="user" value="{{session['email'] }}" readonly>
                         <label for="file">File</label>
-                        <input type="file" class="custom-file-input" id="file" name="file">
+                        <input type="file" class="custom-file-input" id="file" name="file" required>
                     </div>
 
                     <div class="col-md-12 col-sm-12">
                         <label for="role">Select Doctor</label>
-                        <select id="role" name="doctor" class="col-md-12 col-sm-12">
+                        <select id="role" name="doctor" class="col-md-12 col-sm-12" required>
                             {% for doctor in doctors %}
-                            <option value="{{ doctor.id }}">{{ doctor.name }}</option>
+                            <option value="{{ doctor.email }}">{{ doctor.name }}</option>
                             {% endfor %}
                         </select>
 

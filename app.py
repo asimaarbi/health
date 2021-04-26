@@ -5,7 +5,6 @@ from flask import Flask, render_template, flash, redirect, request, session, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
-
 from admin import UserModelView
 from models import db, User, File, Advise
 
@@ -28,8 +27,24 @@ def index():
     return render_template('index.html')
 
 
+def return_user(email):
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        error = 'Invalid Credentials. Please try again.'
+        return render_template('login.html', error=error)
+    if user.role == 'doctor':
+        doctors = File.query.filter_by(assigned_to=email).all()
+        return render_template('doctor.html', doctors=doctors)
+    else:
+        patients = File.query.filter_by(uploaded_by=user.email).all()
+        return render_template('patient.html', patients=patients)
+
+
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    if session['logged_in']:
+        email = session['email']
+        return return_user(email)
     if request.method == 'POST':
         user = User.query.filter_by(email=request.form['email']).first()
         if user:
@@ -41,17 +56,10 @@ def login():
                 session['uid'] = user.id
                 if user.role == 'admin':
                     error = 'Invalid Credentials. Please try again.'
-                    print(error)
                     return render_template('login.html', error=error)
-                if user.role == 'doctor':
-                    doctors = File.query.filter_by(assigned_to=str(user.id)).all()
-                    return render_template('doctor.html', doctors=doctors)
-                else:
-                    patients = File.query.filter_by(uploaded_by=user.email).all()
-                    return render_template('patient.html', patients=patients)
+                return return_user(request.form['email'])
             else:
                 error = 'Invalid Credentials. Please try again.'
-                print(error)
                 return render_template('login.html', error=error)
     return render_template('login.html')
 
@@ -105,11 +113,27 @@ def file_upload():
     return render_template('patient.html', patients=patients)
 
 
+@app.route('/advise/<assignee>/<uid>/', methods=['GET', 'POST'])
+def advise(assignee, uid):
+    return render_template('advise_submit.html', assignee=assignee, uid=uid)
+
+
 @app.route('/add_advise/', methods=['GET', 'POST'])
 def add_advise():
+    email = session['email']
+    patient = request.args['patient']
+    uid = request.args['uid']
     msg = request.args['msg']
-    print(msg)
-    return redirect(url_for('login'))
+    print(patient, msg)
+    file = File.query.filter_by(id=uid).first()
+    file.text = msg
+    advise = Advise(
+        given_by=email,
+        given_to=patient,
+        advise=msg)
+    db.session.add(advise)
+    db.session.commit()
+    return return_user(email)
 
 
 @app.route('/logout/')
@@ -120,7 +144,7 @@ def logout():
 
 @app.route('/admin_login', methods=['POST'])
 def admin_login():
-    if request.form['email'] == 'admin' and request.form['password'] == 'password':
+    if request.form['email'] == 'admin@admin.com' and request.form['password'] == 'password':
         session['logged_in'] = True
         if 'user' in session:
             session.pop('user')

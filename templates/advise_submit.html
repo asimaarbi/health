@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+
+<section id="advise" data-stellar-background-ratio="3">
+    <div class="container">
+        <div class="row">
+            <h1> {{session['name'] }}</h1>
+            <div class="col-md-6 col-sm-6">
+                <img src="../static/images/appointment-image.jpg" class="img-responsive" alt="">
+            </div>
+
+            <!-- CONTACT FORM HERE -->
+            <div class="chat-popup" id="myForm">
+                <form action="{{ url_for('add_advise')  }}" class="form-container">
+
+                    <label for="msg"><b>Message</b></label>
+                    <textarea placeholder="Type message.." name="msg" required></textarea>
+                    <input type="hidden" name="patient" value={{assignee}}>
+                    <input type="hidden" name="uid" value={{uid}}></input>
+
+
+                    <button type="submit" class="btn">Send</button>
+                    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</section>
+
+{% endblock body %}
