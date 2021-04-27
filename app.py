@@ -53,6 +53,8 @@ def return_user(email):
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    if not session['logged_in']:
+        return render_template('login.html')
     if session['logged_in']:
         email = session['email']
         return return_user(email)
