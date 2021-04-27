@@ -12,19 +12,30 @@ import flask_admin as admin
 from flask_admin import expose
 from flask_admin.base import AdminIndexView, BaseView
 from flask_admin.menu import MenuLink
+from flask_mail import Mail, Message
 
 app = Flask(__name__, static_folder='')
 app.config['SECRET_KEY'] = '!9m@S-dThyIlW[pHQbN^'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///main.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'healthapp809@gmail.com'
+app.config['MAIL_PASSWORD'] = 'oneaccount'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+
+mail = Mail(app)
+
 db.init_app(app)
 db.create_all(app=app)
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    doctors = User.query.filter_by(role='doctor').all()
+    return render_template('index.html', doctors=doctors)
 
 
 def return_user(email):
@@ -49,7 +60,6 @@ def login():
         user = User.query.filter_by(email=request.form['email']).first()
         if user:
             if check_password_hash(user.password, request.form['password']):
-                flash('You have successfully logged in.', "success")
                 session['logged_in'] = True
                 session['name'] = user.name
                 session['email'] = user.email
@@ -115,7 +125,9 @@ def file_upload():
 
 @app.route('/advise/<assignee>/<uid>/', methods=['GET', 'POST'])
 def advise(assignee, uid):
-    return render_template('advise_submit.html', assignee=assignee, uid=uid)
+    if uid:
+        return render_template('advise_submit.html', assignee=assignee, uid=uid)
+    return "done"
 
 
 @app.route('/add_advise/', methods=['GET', 'POST'])
@@ -124,7 +136,6 @@ def add_advise():
     patient = request.args['patient']
     uid = request.args['uid']
     msg = request.args['msg']
-    print(patient, msg)
     file = File.query.filter_by(id=uid).first()
     file.text = msg
     advise = Advise(
@@ -134,6 +145,20 @@ def add_advise():
     db.session.add(advise)
     db.session.commit()
     return return_user(email)
+
+
+@app.route("/emails", methods=['GET', 'POST'])
+def email():
+    name = request.form['uname']
+    email = request.form['email']
+    date = request.form['date']
+    doctor = request.form['doctor']
+    message = request.form['message']
+    msg = Message(f'A user {name} wants to Contact you', sender=email, recipients=[doctor])
+    msg.body = f"{message}\n users email:{email}\n {date}"
+    mail.send(msg)
+    doctors = User.query.filter_by(role='doctor').all()
+    return render_template('index.html', doctors=doctors)
 
 
 @app.route('/logout/')

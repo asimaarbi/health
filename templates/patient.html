@@ -1,6 +1,31 @@
 {% extends "base.html" %}
 
 {% block body %}
+<style>
+    .collapsible {
+        background-color: #777;
+        color: white;
+        cursor: pointer;
+        height: 20px;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 15px;
+        padding-top: 0px;
+    }
+
+    .active, .collapsible:hover {
+        background-color: #555;
+    }
+
+    .content {
+        padding: 0 18px;
+        display: none;
+        width: 100%;
+        overflow: hidden;
+        background-color: #f1f1f1;
+    }
+</style>
 <header>
     <div class="container">
         <div class="row">
@@ -84,8 +109,10 @@
                         </a>
                     </td>
                     <td>
-                        <textarea class="form-container" readonly> {{ patient.text }}</textarea>
-                        </a>
+                        <button type="button" class="collapsible">Check</button>
+                        <div class="content">
+                            <p>{{patient.text}}</p>
+                        </div>
                     </td>
 
                 </tr>
@@ -98,5 +125,21 @@
     </div>
     </div>
 </section>
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    }
+</script>
 
 {% endblock body %}
