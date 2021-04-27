@@ -40,13 +40,13 @@ def index():
 
 def return_user(email):
     user = User.query.filter_by(email=email).first()
+    if not user:
+        error = 'Invalid Credentials. Please try again.'
+        return render_template('login.html', error=error)
     session['logged_in'] = True
     session['name'] = user.name
     session['email'] = user.email
     session['uid'] = user.id
-    if not user:
-        error = 'Invalid Credentials. Please try again.'
-        return render_template('login.html', error=error)
     if user.role == 'doctor':
         doctors = File.query.filter_by(assigned_to=email).all()
         return render_template('doctor.html', doctors=doctors)
@@ -168,7 +168,7 @@ def email():
 @app.route('/logout/')
 def logout():
     session['logged_in'] = False
-    session.pop('username', None)
+    session.pop('email')
     return redirect(url_for('index'))
 
 
