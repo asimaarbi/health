@@ -1,35 +1,42 @@
-{% extends "base.html" %}
-{% block head %}
-{%
-{% block body %}
+<html>
+<head>
+    <title>Health - Medical Website Template</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 
-<section id="advise" data-stellar-background-ratio="3">
-    <div class="container">
-        <div class="row">
-            <h1> {{session['name'] }}</h1>
-            <div class="col-md-6 col-sm-6">
-                <img src="../static/images/appointment-image.jpg" class="img-responsive" alt="">
-            </div>
-
-            <!-- CONTACT FORM HERE -->
-            <div class="chat-popup" id="myForm">
-                <form action="{{ url_for('add_advise')  }}" class="form-container">
-
-                    <label for="msg"><b>Message</b></label>
-                    <textarea placeholder="Type message.." name="msg" required></textarea>
-                    <input type="hidden" name="patient" value={{assignee}}>
-                    <input type="hidden" name="uid" value={{uid}}>
+</head>
+<body>
 
 
-                    <button type="submit" class="btn">Send</button>
-                    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-                </form>
-            </div>
+<div style="padding-top: 100px" action="{{ url_for('add_advise')  }}" class="container">
+    <form action="{{ url_for('add_advise')  }}">
+        <div>
+            <h1><b>Submit Advise</b></h1>
         </div>
+        <div class="form-group">
+            <input type="hidden" name="patient" value={{assignee}}>
+            <input type="hidden" name="uid" value={{uid}}>
+            <label><b>Message</b></label>
+        </div>
+        <div>
+            <textarea placeholder="Type message.." name="msg" required></textarea>
+        </div>
+        <div style="padding-top: 10px">
+            <button type="submit" class="btn btn-primary">Submit</button>
 
-    </div>
-    </div>
-</section>
+        </div>
+    </form>
+</div>
 
-{% endblock body %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+</html>
