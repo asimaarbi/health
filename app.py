@@ -40,6 +40,10 @@ def index():
 
 def return_user(email):
     user = User.query.filter_by(email=email).first()
+    session['logged_in'] = True
+    session['name'] = user.name
+    session['email'] = user.email
+    session['uid'] = user.id
     if not user:
         error = 'Invalid Credentials. Please try again.'
         return render_template('login.html', error=error)
@@ -164,6 +168,7 @@ def email():
 @app.route('/logout/')
 def logout():
     session['logged_in'] = False
+    session.pop('username', None)
     return redirect(url_for('index'))
 
 
