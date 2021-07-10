@@ -36,6 +36,7 @@ db.create_all(app=app)
 def index():
     doctors = User.query.filter_by(role='doctor').all()
     return render_template('index.html', doctors=doctors)
+    return render_template('login.html')
 
 
 def return_user(email):
